@@ -13,6 +13,7 @@ services:
       - ./elasticsearch/config:/usr/share/elasticsearch/config
   logstash:
     image: logstash:latest
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
     networks:
       - elknet
     ports:
