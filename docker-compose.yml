@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  elasticsearch:
+    image: elasticsearch:latest
+    networks:
+      - elknet
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elkdata:/usr/share/elasticsearch/data
+      - ./elasticsearch/config:/usr/share/elasticsearch/config
+  logstash:
+    image: logstash:latest
+    networks:
+      - elknet
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logstash/pipelines:/etc/logstash/conf.d
+      - ./logstash/config:/usr/share/logstash/config
+  kibana:
+    image: kibana:latest
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    networks:
+      - elknet
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./kibana/config:/usr/share/kibana/config
+
+networks:
+  elknet:
+    driver: bridge
+
+volumes:
+  elkdata:
+    driver: local
+
