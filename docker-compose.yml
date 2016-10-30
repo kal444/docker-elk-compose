@@ -1,26 +1,31 @@
 version: '2'
 
 services:
+  logstash:
+    image: logstash:latest
+    command: logstash -f /etc/logstash/conf.d
+    networks:
+      - elknet
+    ports:
+      # tcp input port
+      - "5000:5000"
+      # syslog input port
+      - "5514:5514"
+    volumes:
+      - ./logstash/pipelines:/etc/logstash/conf.d
+      - ./logstash/config:/usr/share/logstash/config
   elasticsearch:
     image: elasticsearch:latest
     networks:
       - elknet
     ports:
+      # json interface port
       - "9200:9200"
+      # transport interface port
       - "9300:9300"
     volumes:
       - elkdata:/usr/share/elasticsearch/data
       - ./elasticsearch/config:/usr/share/elasticsearch/config
-  logstash:
-    image: logstash:latest
-    command: logstash -f /etc/logstash/conf.d/logstash.conf
-    networks:
-      - elknet
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./logstash/pipelines:/etc/logstash/conf.d
-      - ./logstash/config:/usr/share/logstash/config
   kibana:
     image: kibana:latest
     environment:
@@ -28,6 +33,7 @@ services:
     networks:
       - elknet
     ports:
+      # web ui port
       - "5601:5601"
     volumes:
       - ./kibana/config:/usr/share/kibana/config

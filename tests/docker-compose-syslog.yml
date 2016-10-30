@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  hello:
+    image: hello-world:latest
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "tcp://192.168.99.100:5514"
+        # much ensure this format matches the expected format in logstash syslog input
+        syslog-format: "rfc3164"
